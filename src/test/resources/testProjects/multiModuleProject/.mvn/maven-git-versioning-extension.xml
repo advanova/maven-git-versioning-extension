@@ -19,7 +19,8 @@
                 <foo>new_new_new</foo>
             </properties>
             <profiles>
-                <profile-dummy1>true</profile-dummy1>
+                <profile-dummy1>false</profile-dummy1>
+                <profile-dummy2>true</profile-dummy2>
             </profiles>
         </ref>
 
@@ -29,6 +30,10 @@
             <properties>
                 <foo>new_new_new</foo>
             </properties>
+            <profiles>
+                <profile-dummy1>false</profile-dummy1>
+                <profile-dummy2>true</profile-dummy2>
+            </profiles>
         </ref>
 
     </refs>

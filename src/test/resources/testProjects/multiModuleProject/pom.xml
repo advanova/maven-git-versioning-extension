@@ -120,9 +120,15 @@
             <id>profile-dummy1</id>
             <activation><activeByDefault>true</activeByDefault></activation>
             <properties>
-<!--                <foo>profile-value</foo>-->
                 <bar>${basedir}/src/main/fuxx</bar>
                 <moo>profile-value</moo>
+            </properties>
+        </profile>
+        <profile>
+            <id>profile-dummy2</id>
+             <properties>
+                <bar2>${basedir}/src/main/fuxx</bar2>
+                <moo2>profile-value2</moo2>
             </properties>
         </profile>
     </profiles>
@@ -136,8 +142,6 @@
             </plugin>
         </plugins>
     </reporting>
-
-
 </project>
 
 <!--mvn install -Dmaven.repo.local=$PWD/.m2/repository-->

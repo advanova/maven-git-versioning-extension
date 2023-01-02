@@ -22,7 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 
 @Named
 @Singleton
-@Component(role = ProfileSelector.class)
+@Component(role = ProfileSelector.class, hint = "default")
 public class GitVersioningProfileSelector extends DefaultProfileSelector {
 
     final private Logger logger = getLogger(GitVersioningProfileSelector.class);
@@ -30,58 +30,29 @@ public class GitVersioningProfileSelector extends DefaultProfileSelector {
     @Inject
     private ContextProvider contextProvider;
 
-    private Map<String, Profile> profileMap = new HashMap<>();
-
-
-
     @Override
     public List<Profile> getActiveProfiles(Collection<Profile> profiles, ProfileActivationContext context, ModelProblemCollector problems) {
         List<Profile> activeProfiles = super.getActiveProfiles(profiles, context, problems);
-        if (context.getProjectDirectory() != null) {
+        if (context.getProjectDirectory() == null) {
             return activeProfiles;
         }
 
+        final Map<String, Boolean> desiredProfileStateMap;
         try {
-            System.err.println(problems.getClass().getDeclaredField("source").get(problems));
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            desiredProfileStateMap = contextProvider.getPatchMatch().getPatchDescription().profiles;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
         }
-        System.err.println("getActiveProfiles: " + context.getProjectProperties());
-
-
-        return activeProfiles;
-
-//        final Set<String> activeProfileIds = activeProfiles.stream().map(Profile::getId).collect(toSet());
-//
-//        final Map<String, Boolean> desiredProfileStateMap;
-//        try {
-//            desiredProfileStateMap = contextProvider.getPatchMatch().getPatchDescription().profiles;
-//        } catch (IOException ex) {
-//            throw new RuntimeException(ex);
-//        }
-//
-//        return profiles.stream().filter(profile -> {
-//            logger.info("handle profile: " + profile.getId());
-//            if (activeProfileIds.contains(profile.getId())) {
-//                logger.info("handle inactive profile: " + profile.getId());
-//                if (!desiredProfileStateMap.getOrDefault(profile.getId(), true)) {
-//                    logger.info("deactivate profile: " + profile.getId());
-//                    return false;
-//                }
-//                return true;
-//            } else {
-//                logger.info("handle inactive profile: " + profile.getId());
-//                if (desiredProfileStateMap.getOrDefault(profile.getId(), false)) {
-//                    logger.info("activate profile: " + profile.getId());
-//                    return true;
-//                }
-//                return false;
-//            }
-//        }).collect(toList());
-    }
-
-    private Optional<Profile> findProfileById(Collection<Profile> profiles, String managedProfileId) {
-        return profiles.stream()
-                .filter(profile -> profile.getId().equals(managedProfileId)).findFirst();
+        return profiles.stream().filter(p -> {
+            if (desiredProfileStateMap.containsKey(p.getId())) {
+                logger.info("Explicit configuration for {}: {}", p.getId(), desiredProfileStateMap.get(p.getId()));
+                //we have an explicit override in the configuration, use it
+                return desiredProfileStateMap.get(p.getId());
+            } else {
+                logger.info("Implicit configuration for {}: {}", p.getId(), activeProfiles.contains(p));
+                // nothing configured, use whatever maven got us
+                return activeProfiles.contains(p);
+            }
+        }).collect(Collectors.toList());
     }
 }

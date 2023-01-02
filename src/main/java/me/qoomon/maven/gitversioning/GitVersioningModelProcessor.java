@@ -139,7 +139,10 @@ public class GitVersioningModelProcessor extends DefaultModelProcessor {
             logger.info("  properties: " + patchDescription.version);
             patchDescription.properties.forEach((key, value) -> logger.info("    " + key + " - " + value));
         }
-
+        if (!patchDescription.profiles.isEmpty()) {
+            logger.info("  profiles: " + patchDescription.version);
+            patchDescription.profiles.forEach((key, value) -> logger.info("    " + key + " - " + value));
+        }
         if (contextProvider.getUpdatePomOption()) {
             logger.info("  updatePom: " + contextProvider.getUpdatePomOption());
         }

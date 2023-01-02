@@ -80,6 +80,7 @@ public class Configuration {
             this.updatePom = description.updatePom;
             this.version = description.version;
             this.properties = new HashMap<>(description.properties);
+            this.profiles = new HashMap<>(description.profiles);
         }
     }
 

@@ -486,6 +486,7 @@ class GitVersioningExtensionIT {
             verifier.verifyErrorFreeLog();
             String expectedVersion = "feature-test-gitVersioning";
             verifier.verifyTextInLog("Building " + logicPomModel.getArtifactId() + " " + expectedVersion);
+            verifier.verifyTextInLog("profihdfle");
 
             Model gitVersionedLogicPomModel = readModel(logicProjectDir.resolve(GIT_VERSIONING_POM_NAME).toFile());
             assertThat(gitVersionedLogicPomModel.getVersion()).isEqualTo(expectedVersion);
